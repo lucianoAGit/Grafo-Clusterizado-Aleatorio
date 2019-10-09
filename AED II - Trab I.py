@@ -28,6 +28,18 @@ def geraMatriz(numComunidade, numVertices, grauMedio, Pin, Pout):
             alcance = range(2 * numVertices, 3 * numVertices)
         if comunidade == 3:
             alcance = range(3 * numVertices, 4 * numVertices)
+        if comunidade == 4:
+            alcance = range(4 * numVertices, 5 * numVertices)
+        if comunidade == 5:
+            alcance = range(5 * numVertices, 6 * numVertices)
+        if comunidade == 6:
+            alcance = range(6 * numVertices, 7 * numVertices)
+        if comunidade == 7:
+            alcance = range(7 * numVertices, 8 * numVertices)
+        if comunidade == 8:
+            alcance = range(8 * numVertices, 9 * numVertices)
+        if comunidade == 9:
+            alcance = range(9 * numVertices, 10 * numVertices)
 
         lista = rd.sample(alcance, 2)
         vr1 = lista[0]
@@ -40,7 +52,7 @@ def geraMatriz(numComunidade, numVertices, grauMedio, Pin, Pout):
                 matrizAdj[vr2][vr1] = 1
                 arestas += 1
 
-        listaInter = rd.sample(range(0, totalVertices), 2)  # checar bug do index
+        listaInter = rd.sample(range(0, totalVertices), 2)
         vr1inter = listaInter[0]
         vr2inter = listaInter[1]
 
@@ -68,11 +80,21 @@ def geraGrafo(matrizAdj, tamanho, numVertices):
             colormap.append('red')
         if x > 3 * numVertices - 1 and x < 4 * numVertices:
             colormap.append('purple')
+        if x > 4 * numVertices - 1 and x < 5 * numVertices:
+            colormap.append('gray')
+        if x > 5 * numVertices - 1 and x < 6 * numVertices:
+            colormap.append('teal')
+        if x > 6 * numVertices - 1 and x < 7 * numVertices:
+            colormap.append('lime')
+        if x > 7 * numVertices - 1 and x < 8 * numVertices:
+            colormap.append('brown')
+        if x > 8 * numVertices - 1 and x < 9 * numVertices:
+            colormap.append('gold')
     for i in range(tamanho):
         for j in range(tamanho):
             if matrizAdj[i][j] == 1:
                 G.add_edge(i + 1, j + 1)
-# ************ PLOTAR A MATRIZ_ADJ E O GRAFO ************
+#************ PLOTAR A MATRIZ_ADJ E O GRAFO ************
     plt.figure(2, figsize=(5, 5))
     fig = plt.imshow(matrizAdj, cmap='hot', interpolation='nearest')
     fig.axes.get_xaxis().set_visible(False)
@@ -83,8 +105,8 @@ def geraGrafo(matrizAdj, tamanho, numVertices):
 
 print("**************** Grafo Randômico Clusterizado ****************")
 
-M = 4 #Nº_COMUNIDADES
-N = 75 #Nº_VERTICES_COMUNIDADE
+M = int(input('Entre com o numero de comunidades(de 1 a 9): ')) #Nº_COMUNIDADES
+N = int(input('Entre com o numero de vertices de cada comunidade: ')) #Nº_VERTICES_COMUNIDADE
 K = 16
 Pin = float(input('Entre com a probabilidade P_in(de 0 a 1): ')) #PROBABILIDADE DE UM NÓ ALEATORIO SE LIGAR COM A SUA PRÓPRIA COMUNIDADE
 Pout = 1 - Pin #PROBABILIDADE DE UM NÓ ALEATORIO SE LIGAR COM OUTRA COMUNIDADE
