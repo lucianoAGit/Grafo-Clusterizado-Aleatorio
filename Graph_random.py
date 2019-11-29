@@ -6,7 +6,9 @@ import numpy as np
 
 np.set_printoptions(threshold=sys.maxsize)
 
+
 # ************ FUNÇÃO QUE GERA A MATRIZ DE ADJACÊNCIA ************
+
 def geraMatriz(numComunidade, numVertices, grauMedio, Pin, Pout):
     k_atual = 0
     arestas = 0
@@ -66,6 +68,24 @@ def geraMatriz(numComunidade, numVertices, grauMedio, Pin, Pout):
 
     return matrizAdj
 
+
+# ************ FUNÇÃO EXCENTRICIDADE DE TODOS OS NOS ************
+#EXCENTRICIDADE É A MENOR DE DISTANCIA DE UM NÓ ATÉ QUALQUER OUTRO NÓ DO GRAFO
+
+def excentricidade(G):
+    n = nx.number_of_nodes(G) + 1
+    exc = []
+    for i in range(1, n):
+        exc.append(0)
+        k = i + 1  # A VARIAVEL K É USADA PARA PERCORRER SOMENTE METADE DA MATRIZ
+        for j in range(k, n):
+            path = nx.shortest_path(G, source=i, target=j, weight=None,method='dijkstra')  # PATH É UMA LISTA COM O CAMINHO DO NO I AO NO J
+            dis = len(path) - 1  # A DISTANCIA É O NUMERO DE ARESTAS
+            if (dis > exc[i - 1]):
+                exc[i - 1] = dis
+    return exc
+
+
 # ************ FUNÇÃO QUE GERA O GRAFO ************
 def geraGrafo(matrizAdj, tamanho, numVertices):
     G = nx.Graph()
@@ -94,21 +114,30 @@ def geraGrafo(matrizAdj, tamanho, numVertices):
         for j in range(tamanho):
             if matrizAdj[i][j] == 1:
                 G.add_edge(i + 1, j + 1)
-#************ PLOTAR A MATRIZ_ADJ E O GRAFO ************
+
+    # ************ PLOTAR A MATRIZ_ADJ E O GRAFO ************
+    posicao = nx.spring_layout(G, k=0.1, iterations=50)
+
     plt.figure(2, figsize=(5, 5))
     fig = plt.imshow(matrizAdj, cmap='hot', interpolation='nearest')
     fig.axes.get_xaxis().set_visible(False)
     fig.axes.get_yaxis().set_visible(False)
-    plt.figure(1, figsize=(7, 7))
-    nx.draw(G, node_color=colormap, font_color='white', node_size=500, with_labels=False)
+    plt.figure(1, figsize=(10, 10))
+    nx.draw(G, node_color=colormap, font_color='white', node_size=500, with_labels=False, pos=posicao)
     plt.show()
+    return G
 
-print("**************** Grafo Randômico Clusterizado ****************")
 
-M = int(input('Entre com o numero de comunidades(de 1 a 9): ')) #Nº_COMUNIDADES
-N = int(input('Entre com o numero de vertices de cada comunidade: ')) #Nº_VERTICES_COMUNIDADE
-K = 16
-Pin = float(input('Entre com a probabilidade P_in(de 0 a 1): ')) #PROBABILIDADE DE UM NÓ ALEATORIO SE LIGAR COM A SUA PRÓPRIA COMUNIDADE
+M = 8  #Nº_COMUNIDADES
+N = 70 #Nº_VERTICES_COMUNIDADE
+K = 13 #K_MEDIO
+Pin = 0.93 #PROBABILIDADE DE UM NÓ ALEATORIO SE LIGAR COM A SUA PRÓPRIA COMUNIDADE
 Pout = 1 - Pin #PROBABILIDADE DE UM NÓ ALEATORIO SE LIGAR COM OUTRA COMUNIDADE
 
-geraGrafo(geraMatriz(M,N,K,Pin,Pout), M*N, N)
+G = geraGrafo(geraMatriz(M,N,K,Pin,Pout), M*N, N)
+exc_list = excentricidade(G) # SALVA A EXCENTRICIDADE DE TODOS OS NOS DO GRAFO EM UMA LISTA
+
+exc_list.sort()
+
+print("Raio: "+str(exc_list[1]))# MENOR EXCENTRICIDADE
+print("Diametro: "+str(exc_list[len(exc_list)-1]))#MAIOR EXCENTRICIDADE
